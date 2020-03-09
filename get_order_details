@@ -1,0 +1,41 @@
+import json, pymysql
+
+def lambda_handler(event, context):
+    # TODO implement
+    order_id = event["order_id"]
+    print("About to connect")
+    order_item = 'None'
+    order_value = 0
+    
+    conn = pymysql.connect("<your database name>", user="xxx",
+                           passwd="xxxx", db="<your database name>", connect_timeout=5)
+    with conn.cursor() as cur:
+        cur.execute("select order_item, order_value from order_detail where order_id= " + str(order_id))
+    
+    for row in cur:
+            #customer_name _ret= customer_name
+            print("Order Item:"+ row[0])
+            order_item = row[0]
+            order_value = row[1]
+        
+
+    
+    
+
+    if order_item == 'None': # if the customer does not exist then return null
+        print("Order Does not exist")
+        
+        set_return = 0
+        set_return_value = 0
+    else:        # if they do exist then return the name of the customer
+        set_return = order_item
+        set_return_value = order_value
+    cur.close()    
+    conn.close()
+    
+    return {
+            'statusCode': 200,
+            'Customer_name':set_return,
+            'order value':set_return_value,
+            'body': json.dumps('Hello from Lambda!')
+        }
